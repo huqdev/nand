@@ -26,14 +26,22 @@ class Main {
             do m.loadConfig(key - 48);
             do m.update();
         }
+        // a to turn to west and move 1 step 
+        if(key = 65) {
+            do player.turnTo(3);
+            do player.move(m);
+            do m.update();
+        }
         // c to clear all fog 
         if(key = 67) {
             do m.clearFog();
             do m.update();
         }
-        // d to debug
+        // d to turn east and move 1 step 
         if(key = 68) {
-            do m.debugShowCounts();
+            do player.turnTo(1);
+            do player.move(m);
+            do m.update();
         }
         // e to turn the player Clockwise
         if(key = 69) {
@@ -45,14 +53,23 @@ class Main {
             do player.turnCounterClockwise();
             do m.update();
         }
+        
+        // s to turn south and move 1 step
+        if(key = 83) {
+            do player.turnTo(2);
+            do player.move(m);
+            do m.update();
+        }
         // w to move 
         if(key = 87) {
+            do player.turnTo(0);
             do player.move(m);
             do m.update();
         }
         while(~(key = 0)) {
             let key = Keyboard.keyPressed();
-            if(key = 87){
+            // f to go fast
+            if(key = 70){
                 do Sys.wait(100);
                 do player.move(m);
                 do m.update();
