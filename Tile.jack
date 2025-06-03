@@ -1,0 +1,100 @@
+class Tile {
+    // state is 16 bit int
+    // save all needed information in those 16 bit
+    // to reduce heap usage
+    // increases calculations needed
+    
+    // -unused-- door state  
+    // 0000 0000 0000 0000
+
+    // door 
+    // 3210
+    // 0 := bottomDoor
+    // 1:= rightDoor
+    
+    // state 
+    // 3210
+    // if 0 is set := free
+    // if 1 is set := fog
+    // if 2 is set := wall
+    
+    // free := 0
+    // fog := 1
+    // wall := 2
+    field int binaryState;
+
+    /*
+    field int state;
+    field boolean doorBottom, doorRight;
+    */
+    constructor Tile new(int pstate) {
+        do setState(pstate);
+        do closeDoor(1);
+        do closeDoor(2);
+        return this;
+    }
+    method void dispose() {
+        do Memory.deAlloc(this);
+        return;
+    }
+
+    method void setState(int newState) {
+        if(newState = 0) {
+            let binaryState = binaryState | 1 & (~2) & (~4);
+        }
+        if(newState = 1) {
+            let binaryState = binaryState | 2 & (~1) & (~4);
+        }
+        if(newState = 2) {
+            let binaryState = binaryState | 4 & (~2) & (~1);
+        }
+        return;
+    }
+
+    method int getState() {
+        if((binaryState & 1) = 1) {
+            return 0;
+        }
+        if((binaryState & 2) = 2) {
+            return 1;
+        }
+        if((binaryState & 4) = 4) {
+            return 2;
+        }
+        return -1;
+    }
+
+    method void openDoor(int decider) {
+        if(decider = 1) {
+            // bottomDoor bit corresponds to int value 16
+            let binaryState = binaryState | 16;
+        }
+        if(decider = 2) {
+            // rightDoor bit corresponds to int value 32
+            let binaryState = binaryState | 32;
+        }
+        return;
+    }
+    
+    method void closeDoor(int decider) {
+        if(decider = 1) {
+            // bottomDoor bit corresponds to int value 16
+            // keep all bits except the bit for 16 (5th one)
+            let binaryState = binaryState & (~16);
+        }
+        if(decider = 2) {
+            // bottomDoor bit corresponds to int value 32 
+            // keep all bits except the bit for 32 (6th one)
+            let binaryState = binaryState & (~32);
+        }
+        return;
+    }
+
+    method boolean isOpenBottom() {
+        return ((binaryState & 16) = 16);
+    }
+    
+    method boolean isOpenRight() {
+        return ((binaryState & 32) = 32);
+    }
+}

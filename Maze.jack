@@ -1,0 +1,488 @@
+class Maze {
+    field Array maze;
+    field int lengthX;
+    field int lengthY;
+    field int tileSize;
+    field Player player;
+    field int countRight, countBottom;
+    constructor Maze new(int lx, int ly) {
+        var int index;
+        var int size;
+        var Tile tile;
+        let lengthX = lx;
+        let lengthY =  ly;
+        let tileSize = 8;
+        if((lengthX * tileSize) > 512) {
+            do Sys.error(1);
+        }
+        if((lengthY * tileSize) > 256) {
+            do Sys.error(1);
+        }
+        let size = lengthX * lengthY;
+        let maze = Array.new(size);
+        let index = 0;
+        while(index < size) {
+            // everything is fog
+            let maze[index] = Tile.new(1);
+            let index = index + 1;
+        }
+        let tile = maze[getIndex(1,1)];
+        do tile.setState(0);
+        let player = Player.new(1,1);
+        return this;
+    }
+
+    method void debugShowCounts() {
+        var int right,bottom;
+        do Sys.wait(10000);
+        let right = countRight;
+        let bottom = countBottom;
+        return;
+    }
+
+    method void dispose() {
+        var int index,size;
+        var Tile tile;
+        let index = 0;
+        while(index < size) {
+            let tile = maze[index];
+            do tile.dispose();
+            let index = index + 1;
+        }
+        do player.dispose();
+        do Memory.deAlloc(this);
+        return;
+    }
+
+    method void setTile(int x, int y, int state) {
+        var Tile tile;
+        let tile = maze[getIndex(x,y)];
+        do tile.setState(state);
+        return;
+    }
+
+    method void update() {
+        var int currentX;
+        var int currentY;
+        let currentY = 0;
+        do drawPlayer();
+        while(currentY < lengthY) {
+            let currentX = 0;
+            while(currentX < lengthX) {
+                do drawTile(currentX, currentY);
+                do drawOutline(currentX, currentY);
+                let currentX = currentX + 1;
+            }   
+            let currentY = currentY + 1;
+        }
+        do drawPlayer();
+        return;
+    }
+
+    method void drawTile(int x, int y) {
+        var int baseX;
+        var int baseY;
+        var Tile tile;
+        let baseX = x * tileSize;
+        let baseY = y * tileSize;
+        let tile = maze[getIndex(x,y)];
+        do Screen.setColor(tile.getState() = 2);
+        do Screen.drawRectangle(baseX, baseY, baseX + tileSize - 2, baseY + tileSize - 2);
+        // symbol for fog 
+        if (tile.getState() = 1) {
+            do Screen.setColor(true);
+            do Screen.drawLine(baseX + 2, baseY + 1, baseX + 4, baseY + 1);
+            do Screen.drawPixel(baseX + 4, baseY + 2);
+            do Screen.drawPixel(baseX + 3, baseY + 3);
+            do Screen.drawPixel(baseX + 3, baseY + 5);
+        }
+        return;
+    }
+
+    method void drawOutline(int x, int y) {
+        var int baseX;
+        var int baseY;
+        var Tile tile,below,right;
+        var boolean belowTileRightOpen, rightTileBottomOpen;
+        let baseX = x * tileSize;
+        let baseY = y * tileSize;
+        // does a tile below exist
+        // default is true, since no Tile means no closedDoor
+        let belowTileRightOpen = true;
+        if (y < lengthY - 2) {
+            let tile = maze[getIndex(x,y + 1)];
+            let belowTileRightOpen = tile.isOpenRight();
+        }
+        // same for right Tile
+        let rightTileBottomOpen = true;
+        if (x < lengthX - 2) {
+            let tile = maze[getIndex(x + 1,y)];
+            let rightTileBottomOpen = tile.isOpenBottom();
+        }
+        let tile = maze[getIndex(x,y)];
+        do Screen.setColor((tile.getState() = 1) | ~tile.isOpenBottom());
+        do Screen.drawLine(baseX, baseY + tileSize - 1, baseX + tileSize - 2, baseY + tileSize - 1);
+        do Screen.setColor((tile.getState() = 1) | ~tile.isOpenRight());
+        do Screen.drawLine(baseX + tileSize - 1, baseY, baseX + tileSize - 1, baseY + tileSize - 2);
+        do Screen.setColor((tile.getState() = 1) | ~tile.isOpenRight() | ~tile.isOpenBottom() | ~belowTileRightOpen | ~rightTileBottomOpen);
+        do Screen.drawPixel(baseX + tileSize - 1, baseY + tileSize - 1);
+        return;
+    }
+
+    method void setBorder(){
+        var int x,y;
+        var Tile tile;
+        let x = 0;
+        while(x < lengthX) {
+            let tile = maze[getIndex(x, 0)];
+            do tile.closeDoor(1);
+            do tile.closeDoor(2);
+            do setTile(x, 0, 2);       
+            let tile = maze[getIndex(x, lengthY - 1)];
+            do tile.closeDoor(1);
+            do tile.closeDoor(2);
+            let tile = maze[getIndex(x, lengthY - 2)];
+            do tile.closeDoor(1);
+            do setTile(x, lengthY - 1, 2);       
+            let x = x + 1;
+        }
+        let y = 0;
+        while(y < lengthY) {
+            let tile = maze[getIndex(0, y)];
+            do tile.closeDoor(1);
+            do tile.closeDoor(2);
+            do setTile(0, y, 2);       
+            let tile = maze[getIndex(lengthX - 1, y)];
+            do tile.closeDoor(1);
+            do tile.closeDoor(2);
+            let tile = maze[getIndex(lengthX - 2, y)];
+            do tile.closeDoor(2);
+            do setTile(lengthX - 1, y, 2);       
+            let y = y + 1;
+        }
+        return;
+    }
+
+    method int getIndex(int x, int y) {
+        return (lengthX * y) + x;
+    }
+
+    method void drawPlayer() {
+        var int baseX;
+        var int baseY;
+        let baseX = player.getX() * tileSize;
+        let baseY = player.getY() * tileSize;
+        do Screen.setColor(~maze[getIndex(player.getX(), player.getY())]);
+        // arrow pointing west
+        if (player.getDirection() = 3) {
+            do Screen.drawLine(baseX + 1, baseY + 3, baseX + 5, baseY + 3);
+            do Screen.drawPixel(baseX + 2, baseY + 2);
+            do Screen.drawPixel(baseX + 2, baseY + 4);
+            do Screen.drawPixel(baseX + 3, baseY + 1);
+            do Screen.drawPixel(baseX + 3, baseY + 5);
+        }
+        // arrow pointing east
+        if (player.getDirection() = 1) {
+            do Screen.drawLine(baseX + 1, baseY + 3, baseX + 5, baseY + 3);
+            do Screen.drawPixel(baseX + 4, baseY + 2);
+            do Screen.drawPixel(baseX + 4, baseY + 4);
+            do Screen.drawPixel(baseX + 3, baseY + 1);
+            do Screen.drawPixel(baseX + 3, baseY + 5);
+        }
+        // arrow pointing north 
+        if (player.getDirection() = 0) {
+            do Screen.drawLine(baseX + 3, baseY + 1, baseX + 3, baseY + 5);
+            do Screen.drawPixel(baseX + 2, baseY + 2);
+            do Screen.drawPixel(baseX + 4, baseY + 2);
+            do Screen.drawPixel(baseX + 1, baseY + 3);
+            do Screen.drawPixel(baseX + 5, baseY + 3);
+        }
+        // arrow pointing north 
+        if (player.getDirection() = 2) {
+            do Screen.drawLine(baseX + 3, baseY + 1, baseX + 3, baseY + 5);
+            do Screen.drawPixel(baseX + 2, baseY + 4);
+            do Screen.drawPixel(baseX + 4, baseY + 4);
+            do Screen.drawPixel(baseX + 1, baseY + 3);
+            do Screen.drawPixel(baseX + 5, baseY + 3);
+        }
+        //  do Screen.drawRectangle(baseX + 2, baseY + 2, baseX + tileSize - 3, baseY + tileSize - 3);
+        return;
+    }
+
+    
+    method boolean isFree(int x, int y) {
+        var Tile tile;
+        let tile = maze[getIndex(x,y)];
+        return ~(tile.getState() = 2);
+    }
+
+    method boolean canMove() {
+        var int direction;
+        var Tile tile;
+        let direction = player.getDirection();
+        if(direction = 0) {
+            let tile = maze[getIndex(player.getX(), player.getY() - 1)];
+            return tile.isOpenBottom();
+        }
+        if(direction = 1) {
+            let tile = maze[getIndex(player.getX(), player.getY())];
+            return tile.isOpenRight();
+        }
+        if(direction = 2) {
+            let tile = maze[getIndex(player.getX(), player.getY())];
+            return tile.isOpenBottom();
+        }
+        if(direction = 3) {
+            let tile = maze[getIndex(player.getX() - 1, player.getY())];
+            return tile.isOpenRight();
+        }
+        return true;
+    }
+
+
+    method Player getPlayer() {
+        return player;
+    }
+
+    // 0 = all doors open
+    // 1 = close all doors
+    // 2 = horizontal lines with 1 open door south
+    // 3 = vertical lines with 1 open door east 
+    method void loadConfig(char id) {
+        var int x, y;
+        var Tile tile;
+        if(id = 0) {
+            do openAllDoors();
+            return;
+        }
+        if(id = 1) {
+            do closeAllDoors();
+            return;
+        }
+        if(id = 2) {
+            do horizontalLines();
+            return;
+        }
+        if(id = 3) {
+            do verticalLines();
+            return;
+        }
+        if(id = 4) {
+            do generateRealMaze();
+            return;
+        }
+        return;
+    }
+    method void verticalLines() {
+        var int x,y;
+        var Tile tile;
+        do openAllDoors();
+        let x = 1;
+        while (x < (lengthX - 2)) {
+            let y = 1;
+            while (y < (lengthY - 1)) {
+                let tile = maze[getIndex(x,y)];
+                do tile.closeDoor(2);
+                let y = y + 1;
+            }
+            let tile = maze[getIndex(x,Random.between(1,lengthY - 1))];
+            do tile.openDoor(2);
+            let x = x + 1;
+        }
+        return;  
+    }
+    
+    method void horizontalLines() {
+        var int x,y;
+        var Tile tile;
+        do openAllDoors();
+        let y = 1;
+        while (y < (lengthY - 2)) {
+            let x = 1;
+            while (x < (lengthX - 1)) {
+                let tile = maze[getIndex(x,y)];
+                do tile.closeDoor(1);
+                let x = x + 1;
+            }
+            let tile = maze[getIndex(Random.between(1,lengthX - 1),y)];
+            do tile.openDoor(1);
+            let y = y + 1;
+        }
+        return;  
+    }
+    
+    method void openAllDoors(){
+        var int x,y;
+        var Tile tile;
+        let x = 1;
+        while(x < (lengthX - 2)) {
+            let y = 1;
+            while(y < (lengthY - 2)) {
+                let tile = maze[getIndex(x,y)];
+                do tile.openDoor(1);
+                do tile.openDoor(2);
+                let y = y + 1;
+            }
+            let x = x + 1;
+        }
+
+        let x = lengthX - 2;
+        let y = 1;
+        while (y < (lengthY - 2)) {
+            let tile = maze[getIndex(x,y)];
+            do tile.openDoor(1);
+            let y = y + 1;
+        }
+        
+        let x = 1;
+        let y = lengthY - 2;
+        while (x < (lengthX - 2)) {
+            let tile = maze[getIndex(x,y)];
+            do tile.openDoor(2);
+            let x = x + 1;
+        }
+        return;
+    }
+    method void closeAllDoors() {
+        var int x,y;
+        var Tile tile;
+        let x = 1;
+        while(x < (lengthX - 1)) {
+            let y = 1;
+            while(y < (lengthY - 1)) {
+                let tile = maze[getIndex(x,y)];
+                do tile.closeDoor(1);
+                do tile.closeDoor(2);
+                let y = y + 1;
+            }
+            let x = x + 1;
+        }
+        return;
+    }
+
+    method void generateRealMaze() {
+        var Array family;
+        var int sizeF, needed;
+        var int index, count, countThisY;
+        var int x,y,markX, markY;
+        var Tile tile;
+        let countRight = 0;
+        let countBottom = 0;
+        do closeAllDoors();
+        // Zusammenhangskomponente aller Knoten
+        let sizeF = lengthX * lengthY;
+        let family = Array.new(sizeF);
+        let index = 0;
+        while(index < sizeF) {
+            let family[index] = index;
+            let index = index + 1;
+        }
+        let x = 0;
+        while(x < lengthX) {
+            let family[getIndex(x, 0)] = -1;
+            let family[getIndex(x, lengthY - 1)] = -1;
+            let x = x + 1;
+        }
+        let y = 0;
+        while(y < lengthY) {
+            let family[getIndex(0, y)] = -1;
+            let family[getIndex(lengthX - 1, y)] = -1;
+            let y = y + 1;
+        }
+        let count = 0;
+        // amount of inner connections
+        let needed = ((lengthX - 2) * (lengthY - 2)) - 1;
+        while((count < needed)) {
+            let markX = Random.between(1, lengthX - 3);
+            let x = markX + 1;
+            while(~(x = markX) & (count < needed)) {
+                let markY = Random.between(2, lengthY - 3);
+                if(Maze.isEven(x)) {
+                    let y = markY + 1;
+                } else {
+                    let y = markY - 1;
+                }
+                while(~(y = markY) & (count < needed)) {
+                    let tile = maze[getIndex(x,y)];
+                        if(~((Random.rand() & 8) = 8)){
+                            // block below no border & different family
+                            if((~(family[getIndex(x,y + 1)] = -1)) & (~(family[getIndex(x,y)] = family[getIndex(x,y + 1)]))) {
+                                do tile.openDoor(1);
+                                let count = count + 1;
+                                let countBottom = countBottom + 1;
+                                do update();
+                                do makeNeighbor(family,sizeF,x,y,x,y+1);
+                            }
+                        } else {
+                            // block right no border & different family
+                            if((~(family[getIndex(x + 1,y)] = -1)) & (~(family[getIndex(x,y)] = family[getIndex(x + 1,y)]))) {
+                                do tile.openDoor(2);
+                                let count = count + 1;
+                                let countRight = countRight + 1;
+                                do update();
+                                do makeNeighbor(family,sizeF,x,y,x + 1,y);
+                            }
+                        }
+                    if(Maze.isEven(x)) {
+                        if(y = (lengthY - 2)) {
+                            let y = 1;
+                        }else {
+                            let y = y + 1;
+                        }
+                    } else {
+                        if(y = 1) {
+                            let y = lengthY - 2;
+                        }else {
+                            let y = y - 1;
+                        }
+                    }
+                }
+                if(x = (lengthX - 2)) {
+                    let x = 1;
+                }else {
+                    let x = x + 1;
+                }
+            }
+        }
+        do family.dispose();
+        return;
+    }
+
+    method void makeNeighbor(Array family, int size,int xp,int yp,int xc,int yc) {
+        var int parent, child;
+        var int index;
+        let parent = family[getIndex(xp,yp)];
+        let child = family[getIndex(xc,yc)];
+        let index = 0;
+        while(index < size) {
+            if(family[index] = child) {
+                let family[index] = parent;
+            }
+            let index = index + 1;
+        }
+        return;
+    }
+
+    function boolean isEven(int x) {
+        // lowest bit is set
+        if((x & 1) = 1) {
+            return false;
+        }
+        return true;
+    }
+    
+    method void clearFog() {
+        var int index, size;
+        var Tile tile;
+        let index = 0;
+        let size = lengthX * lengthY;
+        while(index < size) {
+            let tile = maze[index];
+            if(tile.getState() = 1) {
+                do tile.setState(0);
+            }
+            let index = index + 1;
+        }
+        return;
+    }
+}

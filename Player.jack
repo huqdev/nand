@@ -1,0 +1,107 @@
+class Player {
+    field int x,y;
+    field int direction;
+    constructor Player new(int px, int py) {
+        let x = px;
+        let y = py;
+        let direction = 1;
+        return this;
+    }
+    method int getDirection() {
+        return direction;
+    }
+
+    method int getX() {
+        return x;
+    }
+    
+    method int getY() {
+        return y;
+    }
+
+    method void dispose() {
+        do Memory.deAlloc(this);   
+        return;
+    }
+
+    method void turnClockwise() {
+        if(direction = 3) {
+            let direction = 0;
+        } else {
+            let direction = direction + 1;
+        }
+        return;
+    }
+    
+    method void turnCounterClockwise() {
+        if(direction = 0) {
+            let direction = 3;
+        } else {
+            let direction = direction - 1;
+        }
+        return;
+    }
+
+    method void move(Maze maze) {
+        if(~maze.canMove()) {
+            return;
+        }
+        if(direction = 0) {
+            do moveNorth(maze);
+        }
+        if(direction = 1) {
+            do moveEast(maze);
+        }
+        if(direction = 2) {
+            do moveSouth(maze);
+        }
+        if(direction = 3) {
+            do moveWest(maze);
+        }
+        return;
+    }
+    
+    method void moveNorth(Maze maze) {
+        var int newY;
+        let newY = y - 1;
+        if(maze.isFree(x, newY)) {
+            let y = newY;
+            do maze.setTile(x, newY, 0);
+            do maze.update();
+        }
+        return;
+    }
+    
+    method void moveSouth(Maze maze) {
+        var int newY;
+        let newY = y + 1;
+        if(maze.isFree(x, newY)) {
+            let y = newY;
+            do maze.setTile(x, newY, 0);
+            do maze.update();
+        }
+        return;
+    }
+    
+    method void moveWest(Maze maze) {
+        var int newX;
+        let newX = x - 1;
+        if(maze.isFree(newX, y)) {
+            let x = newX;
+            do maze.setTile(newX, y, 0);
+            do maze.update();
+        }
+        return;
+    }
+    
+    method void moveEast(Maze maze) {
+        var int newX;
+        let newX = x + 1;
+        if(maze.isFree(newX, y)) {
+            let x = newX;
+            do maze.setTile(newX, y, 0);
+            do maze.update();
+        }
+        return;
+    }
+}

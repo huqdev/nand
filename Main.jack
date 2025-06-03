@@ -1,0 +1,64 @@
+class Main {
+    function void main() {
+        var Maze m;
+        var Player player;
+        var char key;
+        var int seed;
+        do Output.printString("Press any Key to start");
+        let key = Keyboard.keyPressed();
+        let seed = 42;
+        while(key = 0) {
+            let key = Keyboard.keyPressed();
+            do Sys.wait(10);
+            let seed = seed + 1;
+        }
+        do Random.setSeed(seed);
+        do Screen.clearScreen();
+        let m = Maze.new(32,32);
+        do Random.setSeed(0);
+        do m.setBorder();
+        do m.update();
+        let player = m.getPlayer();
+        while(true) {
+        let key = Keyboard.keyPressed();
+        // if a number is pressed, load the corresponding preset
+        if(~(key = 0)) {
+            do m.loadConfig(key - 48);
+            do m.update();
+        }
+        // c to clear all fog 
+        if(key = 67) {
+            do m.clearFog();
+            do m.update();
+        }
+        // d to debug
+        if(key = 68) {
+            do m.debugShowCounts();
+        }
+        // e to turn the player Clockwise
+        if(key = 69) {
+            do player.turnClockwise();
+            do m.update();
+        }
+        // q to turn the player counter Clockwise
+        if(key = 81) {
+            do player.turnCounterClockwise();
+            do m.update();
+        }
+        // w to move 
+        if(key = 87) {
+            do player.move(m);
+            do m.update();
+        }
+        while(~(key = 0)) {
+            let key = Keyboard.keyPressed();
+            if(key = 87){
+                do Sys.wait(100);
+                do player.move(m);
+                do m.update();
+            }
+        }
+        }
+        return;
+    }
+}
