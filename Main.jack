@@ -4,7 +4,13 @@ class Main {
         var Player player;
         var char key;
         var int seed;
+        var boolean adminMode;
+        
+        // start
         do Output.printString("Press any Key to start");
+        let adminMode = false;
+        
+        // wait for user Input and set seed
         let key = Keyboard.keyPressed();
         let seed = 42;
         while(key = 0) {
@@ -13,28 +19,28 @@ class Main {
             let seed = seed + 1;
         }
         do Random.setSeed(seed);
+        
+        // wait for user to release key before starting the game
+        while(~(key = 0)) {
+            let key = Keyboard.keyPressed();
+            do Sys.wait(10);
+        }
+        
+        // init random maze
         do Screen.clearScreen();
-        let m = Maze.new(32,32);
-        do Random.setSeed(0);
+        let m = Maze.new(64,32);
         do m.setBorder();
+        do m.loadConfig(4);
         do m.update();
         let player = m.getPlayer();
+        
+        // gameplay Loop
         while(true) {
         let key = Keyboard.keyPressed();
-        // if a number is pressed, load the corresponding preset
-        if(~(key = 0)) {
-            do m.loadConfig(key - 48);
-            do m.update();
-        }
         // a to turn to west and move 1 step 
         if(key = 65) {
             do player.turnTo(3);
             do player.move(m);
-            do m.update();
-        }
-        // c to clear all fog 
-        if(key = 67) {
-            do m.clearFog();
             do m.update();
         }
         // d to turn east and move 1 step 
@@ -60,12 +66,30 @@ class Main {
             do player.move(m);
             do m.update();
         }
-        // w to move 
+        // w to turn north and move 1 step 
         if(key = 87) {
             do player.turnTo(0);
             do player.move(m);
             do m.update();
         }
+
+        // esc to toggle adminMode
+        if(key = 140) {
+            let adminMode = ~adminMode;
+        }
+        
+        // admin only commands
+        // c to clear all fog 
+        if(adminMode & (key = 67)) {
+            do m.clearFog();
+            do m.update();
+        }
+        // if a number is pressed, load the corresponding preset
+        if(adminMode & (~(key = 0))) {
+            do m.loadConfig(key - 48);
+            do m.update();
+        }
+        
         while(~(key = 0)) {
             let key = Keyboard.keyPressed();
             // f to go fast
