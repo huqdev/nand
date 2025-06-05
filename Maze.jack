@@ -1,18 +1,19 @@
 class Maze {
+    static int offsetX;
     field Array maze;
     field int lengthX;
     field int lengthY;
     field int tileSize;
     field Player player;
-    field int countRight, countBottom;
     constructor Maze new(int lx, int ly) {
         var int index;
         var int size;
         var Tile tile;
+        let offsetX = 256;
         let lengthX = lx;
         let lengthY =  ly;
         let tileSize = 8;
-        if((lengthX * tileSize) > 512) {
+        if((lengthX * tileSize) > 256) {
             do Sys.error(1);
         }
         if((lengthY * tileSize) > 256) {
@@ -30,14 +31,6 @@ class Maze {
         do tile.setState(0);
         let player = Player.new(1,1);
         return this;
-    }
-
-    method void debugShowCounts() {
-        var int right,bottom;
-        do Sys.wait(10000);
-        let right = countRight;
-        let bottom = countBottom;
-        return;
     }
 
     method void dispose() {
@@ -83,7 +76,7 @@ class Maze {
         var int baseX;
         var int baseY;
         var Tile tile;
-        let baseX = x * tileSize;
+        let baseX = x * tileSize + offsetX;
         let baseY = y * tileSize;
         let tile = maze[getIndex(x,y)];
         do Screen.setColor(tile.getState() = 2);
@@ -104,7 +97,7 @@ class Maze {
         var int baseY;
         var Tile tile,below,right;
         var boolean belowTileRightOpen, rightTileBottomOpen;
-        let baseX = x * tileSize;
+        let baseX = x * tileSize + offsetX;
         let baseY = y * tileSize;
         // does a tile below exist
         // default is true, since no Tile means no closedDoor
@@ -170,7 +163,7 @@ class Maze {
     method void drawPlayer() {
         var int baseX;
         var int baseY;
-        let baseX = player.getX() * tileSize;
+        let baseX = player.getX() * tileSize + offsetX;
         let baseY = player.getY() * tileSize;
         do Screen.setColor(~maze[getIndex(player.getX(), player.getY())]);
         // arrow pointing west
