@@ -28,7 +28,7 @@ class Main {
         
         // init random maze
         do Screen.clearScreen();
-        let m = Maze.new(64,32);
+        let m = Maze.new(32,32);
         do m.setBorder();
         do m.loadConfig(4);
         do m.update();
@@ -76,6 +76,10 @@ class Main {
         // esc to toggle adminMode
         if(key = 140) {
             let adminMode = ~adminMode;
+            // when entering admin mode, ask for confirmation
+            if(adminMode) {
+                let adminMode = Main.askConfirmAdmin();
+            }
         }
         
         // admin only commands
@@ -101,5 +105,18 @@ class Main {
         }
         }
         return;
+    }
+
+    function boolean askConfirmAdmin() {
+        var char key;
+        let key = Keyboard.keyPressed();
+        while (key = 0) {
+            let key = Keyboard.keyPressed();       
+        }
+        // Y to confirm
+        if(key = 89) {
+            return true;
+        }
+        return false;
     }
 }

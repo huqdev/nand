@@ -9,7 +9,7 @@ class Maze {
         var int index;
         var int size;
         var Tile tile;
-        let offsetX = 256;
+        let offsetX = 128;
         let lengthX = lx;
         let lengthY =  ly;
         let tileSize = 8;
@@ -359,8 +359,6 @@ class Maze {
         var int index, count, countThisY;
         var int x,y,markX, markY;
         var Tile tile;
-        let countRight = 0;
-        let countBottom = 0;
         do closeAllDoors();
         // Zusammenhangskomponente aller Knoten
         let sizeF = lengthX * lengthY;
@@ -402,7 +400,6 @@ class Maze {
                             if((~(family[getIndex(x,y + 1)] = -1)) & (~(family[getIndex(x,y)] = family[getIndex(x,y + 1)]))) {
                                 do tile.openDoor(1);
                                 let count = count + 1;
-                                let countBottom = countBottom + 1;
                                 do makeNeighbor(family,sizeF,x,y,x,y+1);
                             }
                         } else {
@@ -410,7 +407,6 @@ class Maze {
                             if((~(family[getIndex(x + 1,y)] = -1)) & (~(family[getIndex(x,y)] = family[getIndex(x + 1,y)]))) {
                                 do tile.openDoor(2);
                                 let count = count + 1;
-                                let countRight = countRight + 1;
                                 do makeNeighbor(family,sizeF,x,y,x + 1,y);
                             }
                         }
