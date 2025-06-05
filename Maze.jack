@@ -14,10 +14,10 @@ class Maze {
         let lengthY =  ly;
         let tileSize = 8;
         if((lengthX * tileSize) > 256) {
-            do Sys.error(1);
+            do Sys.error(21);
         }
         if((lengthY * tileSize) > 256) {
-            do Sys.error(1);
+            do Sys.error(21);
         }
         let size = lengthX * lengthY;
         let maze = Array.new(size);
