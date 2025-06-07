@@ -1,12 +1,15 @@
 class Main {
+    static Maze maze;
+    static MazeMenu menu;
+    static Player player;
+    static char key;
+    static boolean adminMode;
     function void main() {
-        var Maze m;
-        var Player player;
-        var char key;
+        var Status status;
+        var int updateThreshhold;
         var int seed;
-        var boolean adminMode;
-        
         // start
+        do Output.moveCursor(0,0);
         do Output.printString("Press any Key to start");
         let adminMode = false;
         
@@ -25,96 +28,113 @@ class Main {
             let key = Keyboard.keyPressed();
             do Sys.wait(10);
         }
+        // int MazeMenu
+        let menu = MazeMenu.new();
+        do menu.setAdminMode(adminMode);
         
         // init random maze
-        do Screen.clearScreen();
-        let m = Maze.new(32,32);
-        do m.setBorder();
-        do m.loadConfig(4);
-        do m.update();
-        let player = m.getPlayer();
+        let maze = Maze.new(32,32);
+        do maze.setBorder();
+        do maze.update();
+        do maze.loadConfig(4);
+        do maze.update();
+        let player = maze.getPlayer();
         
         // gameplay Loop
+        let updateThreshhold = 0;
         while(true) {
-        let key = Keyboard.keyPressed();
-        // a to turn to west and move 1 step 
-        if(key = 65) {
-            do player.turnTo(3);
-            do player.move(m);
-            do m.update();
-        }
-        // d to turn east and move 1 step 
-        if(key = 68) {
-            do player.turnTo(1);
-            do player.move(m);
-            do m.update();
-        }
-        // e to turn the player Clockwise
-        if(key = 69) {
-            do player.turnClockwise();
-            do m.update();
-        }
-        // q to turn the player counter Clockwise
-        if(key = 81) {
-            do player.turnCounterClockwise();
-            do m.update();
-        }
-        
-        // s to turn south and move 1 step
-        if(key = 83) {
-            do player.turnTo(2);
-            do player.move(m);
-            do m.update();
-        }
-        // w to turn north and move 1 step 
-        if(key = 87) {
-            do player.turnTo(0);
-            do player.move(m);
-            do m.update();
-        }
-
-        // esc to toggle adminMode
-        if(key = 140) {
-            let adminMode = ~adminMode;
-            // when entering admin mode, ask for confirmation
-            if(adminMode) {
-                let adminMode = Main.askConfirmAdmin();
+            if(updateThreshhold = 10) {
+                let updateThreshhold = 0;
+                let status = maze.exportStatus();     
+                do menu.setStatus(status);
+                do menu.update();
             }
-        }
-        
-        // admin only commands
-        // c to clear all fog 
-        if(adminMode & (key = 67)) {
-            do m.clearFog();
-            do m.update();
-        }
-        // if a number is pressed, load the corresponding preset
-        if(adminMode & (~(key = 0))) {
-            do m.loadConfig(key - 48);
-            do m.update();
-        }
-        
-        while(~(key = 0)) {
             let key = Keyboard.keyPressed();
-            // f to go fast
-            if(key = 70){
-                do Sys.wait(100);
-                do player.move(m);
-                do m.update();
+            // a to turn to west and move 1 step 
+            if((key = 65) | (key = 97)) {
+                do player.turnTo(3);
+                do player.move(maze);
+                do maze.update();
             }
-        }
+            // d to turn east and move 1 step 
+            if((key = 68) | (key = 100)) {
+                do player.turnTo(1);
+                do player.move(maze);
+                do maze.update();
+            }
+            // e to turn the player Clockwise
+            if((key = 69) | (key = 101)) {
+                do player.turnClockwise();
+                do maze.update();
+            }
+            // q to turn the player counter Clockwise
+            if((key = 81) | (key = 113)) {
+                do player.turnCounterClockwise();
+                do maze.update();
+            }
+            
+            // s to turn south and move 1 step
+            if((key = 83) | (key = 115)) {
+                do player.turnTo(2);
+                do player.move(maze);
+                do maze.update();
+            }
+            // w to turn north and move 1 step 
+            if((key = 87) | (key = 119)) {
+                do player.turnTo(0);
+                do player.move(maze);
+                do maze.update();
+            }
+
+            // esc to toggle adminMode
+            if(key = 140) {
+                let adminMode = ~adminMode;
+                // when entering admin mode, ask for confirmation
+                if(adminMode) {
+                    let adminMode = Main.askConfirmAdmin();
+                }
+                do menu.setAdminMode(adminMode);
+            }
+            
+            // admin only commands
+            // c to clear all fog 
+            if(adminMode & ((key = 67) | (key = 99))) {
+                do maze.clearFog();
+                do maze.update();
+            }
+            // if a number is pressed, load the corresponding preset
+            if(adminMode & (~(key = 0))) {
+                do maze.loadConfig(key - 48);
+                do maze.update();
+            }
+            
+            while(~(key = 0)) {
+                let key = Keyboard.keyPressed();
+                // f to go fast
+                if((key = 70) | (key = 102)){
+                    do Sys.wait(100);
+                    do player.move(maze);
+                    do maze.update();
+                }
+            }
+            let updateThreshhold = updateThreshhold + 1;
         }
         return;
     }
 
     function boolean askConfirmAdmin() {
         var char key;
+        do menu.enablePopup(1);
         let key = Keyboard.keyPressed();
+        while(~(key = 0)) {
+            let key = Keyboard.keyPressed();       
+        }
         while (key = 0) {
             let key = Keyboard.keyPressed();       
         }
-        // Y to confirm
-        if(key = 89) {
+        do maze.update();
+        // y to confirm
+        if((key = 89) | (key = 121)) {
             return true;
         }
         return false;

@@ -1,0 +1,62 @@
+class MazeMenu {
+    static String status, admin, enabled, disabled, confirm;
+    field boolean adminMode;
+    field Status status;
+    constructor MazeMenu new() {
+        return this;
+    }
+
+    method void dispose() {
+        do Memory.deAlloc(this);
+        return;
+    }
+
+    method void setAdminMode(boolean mode) {
+        let adminMode = mode;
+        return;
+    }
+
+    method void setStatus(Status newStatus) {
+        let status = newStatus;
+        return;       
+    }
+
+    method void update() {
+        let status = "Status";
+        let admin = "Admin:";
+        let enabled = "enabled";
+        let disabled = "disabled";
+        let confirm = "press y to confirm admin mode";
+        do Screen.setColor(false);
+        do Screen.drawRectangle(0,0,127,255);
+        do Output.moveCursor(0,0);
+        do Output.printString(status);
+        do Output.moveCursor(1,0);
+        do Output.printString(admin);
+        do Output.moveCursor(1,6);
+        if(adminMode) {
+            do Output.printString(enabled);
+        } else {
+            do Output.printString(disabled);
+        }
+        do Output.moveCursor(2,0);
+        do status.dispose();
+        do admin.dispose();
+        do enabled.dispose();
+        do disabled.dispose();
+        do confirm.dispose();
+        return;
+    }
+
+    method void enablePopup(int id) {
+        do Screen.setColor(false);
+        do Screen.drawRectangle(128, 64, 256 + 128, 128);
+        do Screen.setColor(true);
+        do Screen.drawRectangle(130, 66, 256 + 126, 126);
+        do Screen.setColor(false);
+        do Screen.drawRectangle(132, 68, 256 + 124, 124);
+        do Output.moveCursor(7,17);
+        do Output.printString(confirm);
+        return;
+    }
+}

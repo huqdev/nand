@@ -14,9 +14,13 @@ class Tile {
     
     // state 
     // 3210
+    // 0,1,2 are mutually exclusive
+    // 3 should only be set, when 2 isnt
+    // (wall cant be a target)
     // if 0 is set := free
     // if 1 is set := fog
     // if 2 is set := wall
+    // if 3 is set := target
     
     // free := 0
     // fog := 1
@@ -36,6 +40,14 @@ class Tile {
     method void dispose() {
         do Memory.deAlloc(this);
         return;
+    }
+    method void makeTarget() {
+        let binaryState = binaryState | 8;
+        return;
+    }
+    
+    method boolean isTarget() {
+        return ((binaryState & 8) = 8);
     }
 
     method void setState(int newState) {

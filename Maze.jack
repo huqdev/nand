@@ -5,6 +5,7 @@ class Maze {
     field int lengthY;
     field int tileSize;
     field Player player;
+    field Status status;
     constructor Maze new(int lx, int ly) {
         var int index;
         var int size;
@@ -13,6 +14,7 @@ class Maze {
         let lengthX = lx;
         let lengthY =  ly;
         let tileSize = 8;
+        let status = Status.new();
         if((lengthX * tileSize) > 256) {
             do Sys.error(21);
         }
@@ -33,6 +35,45 @@ class Maze {
         return this;
     }
 
+    method Status exportStatus() {
+        var int fog, free;
+        var int targets, found;
+        var int x,y;
+        var Tile tile;
+        let fog = 0;
+        let free = 0;
+        let targets = 0;
+        let found = 0;
+        do status.setTotalTiles((lengthX - 2) * (lengthY - 2));
+        let x = 1;
+        while(x < (lengthX - 1)) {
+            let y = 1;
+            while(y < (lengthY - 1)) {
+                let tile = maze[getIndex(x,y)];
+                if(tile.getState() = 0) {
+                    let free = free + 1;
+                } else {
+                    let fog = fog + 1;
+                }
+                if(tile.isTarget()) {
+                    let targets = targets + 1;
+                    if(tile.getState() = 0) {
+                        let found = found + 1;
+                    }
+                }
+                
+                let y = y + 1;
+            }
+            let x = x + 1;
+        }
+
+        do status.setFogTiles(fog);
+        do status.setFreeTiles(free);
+        do status.setTotalTargets(targets);
+        do status.setFoundTargets(found);
+        return status;
+    }
+
     method void dispose() {
         var int index,size;
         var Tile tile;
@@ -43,6 +84,7 @@ class Maze {
             let index = index + 1;
         }
         do player.dispose();
+        do status.dispose();
         do Memory.deAlloc(this);
         return;
     }

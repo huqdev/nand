@@ -1,0 +1,62 @@
+class Status {
+    field int totalTiles;
+    field int fogTiles;
+    field int freeTiles;
+    field int totalTargets;
+    field int foundTargets;
+
+    constructor Status new() {
+        return this;
+    }
+
+    method void dispose() {
+        do Memory.deAlloc(this);
+        return;
+    }
+
+    method int getTotalTiles() {
+        return totalTiles;
+    }
+    
+    method int getFogTiles() {
+        return fogTiles;
+    }
+    
+    method int getFreeTiles() {
+        return freeTiles;
+    }
+    
+    method int getTotalTargets() {
+        return totalTargets;
+    }
+    
+    method int getFoundTargets() {
+        return foundTargets;
+    }
+    
+    // setter
+    method void setTotalTiles(int value) {
+        let totalTiles = value;
+        return;
+    }
+    
+    method void setFogTiles(int value) {
+        let fogTiles = value;
+        return;
+    }
+    
+    method void setFreeTiles(int value) {
+        let freeTiles = value;
+        return;
+    }
+    
+    method void setTotalTargets(int value) {
+        let totalTargets = value;
+        return;
+    }
+    
+    method void setFoundTargets(int value) {
+        let foundTargets = value;
+        return;
+    }
+}
