@@ -1,5 +1,5 @@
 class MazeMenu {
-    static String status, admin, enabled, disabled, confirm;
+    static String statusS, admin, enabled, disabled, felder, confirm;
     field boolean adminMode;
     field Status status;
     constructor MazeMenu new() {
@@ -22,15 +22,15 @@ class MazeMenu {
     }
 
     method void update() {
-        let status = "Status";
+        let statusS = "Status";
         let admin = "Admin:";
         let enabled = "enabled";
         let disabled = "disabled";
-        let confirm = "press y to confirm admin mode";
+        let felder = "entdeckt/gesamt";
         do Screen.setColor(false);
         do Screen.drawRectangle(0,0,127,255);
         do Output.moveCursor(0,0);
-        do Output.printString(status);
+        do Output.printString(statusS);
         do Output.moveCursor(1,0);
         do Output.printString(admin);
         do Output.moveCursor(1,6);
@@ -40,15 +40,17 @@ class MazeMenu {
             do Output.printString(disabled);
         }
         do Output.moveCursor(2,0);
-        do status.dispose();
+        do Output.printString(felder);
+        do statusS.dispose();
         do admin.dispose();
         do enabled.dispose();
         do disabled.dispose();
-        do confirm.dispose();
+        do felder.dispose();
         return;
     }
 
     method void enablePopup(int id) {
+        let confirm = "press y to confirm admin mode";
         do Screen.setColor(false);
         do Screen.drawRectangle(128, 64, 256 + 128, 128);
         do Screen.setColor(true);
@@ -57,6 +59,7 @@ class MazeMenu {
         do Screen.drawRectangle(132, 68, 256 + 124, 124);
         do Output.moveCursor(7,17);
         do Output.printString(confirm);
+        do confirm.dispose();
         return;
     }
 }
