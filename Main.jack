@@ -6,7 +6,6 @@ class Main {
     static boolean adminMode;
     function void main() {
         var Status status;
-        var int updateThreshhold;
         var int seed;
         // start
         do Output.moveCursor(0,0);
@@ -28,7 +27,8 @@ class Main {
             let key = Keyboard.keyPressed();
             do Sys.wait(10);
         }
-        // int MazeMenu
+        do Screen.clearScreen();
+        // init MazeMenu
         let menu = MazeMenu.new();
         do menu.setAdminMode(adminMode);
         
@@ -40,16 +40,19 @@ class Main {
         do maze.update();
         let player = maze.getPlayer();
         
+        // refresh menu after maze generation
+        let status = maze.exportStatus();     
+        do menu.setStatus(status);
+        do menu.update();
+        
         // gameplay Loop
-        let updateThreshhold = 0;
         while(true) {
-            if(updateThreshhold = 10) {
-                let updateThreshhold = 0;
-                let status = maze.exportStatus();     
-                do menu.setStatus(status);
-                do menu.update();
-            }
             let key = Keyboard.keyPressed();
+            
+            // after any key has been pressed update the menu
+            if(~(key = 0)) {
+            }
+            
             // a to turn to west and move 1 step 
             if((key = 65) | (key = 97)) {
                 do player.turnTo(3);
@@ -110,14 +113,14 @@ class Main {
             
             while(~(key = 0)) {
                 let key = Keyboard.keyPressed();
+                
                 // f to go fast
                 if((key = 70) | (key = 102)){
-                    do Sys.wait(100);
                     do player.move(maze);
                     do maze.update();
                 }
+                do Sys.wait(100);
             }
-            let updateThreshhold = updateThreshhold + 1;
         }
         return;
     }
