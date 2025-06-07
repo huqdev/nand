@@ -3,7 +3,7 @@ class Main {
     static MazeMenu menu;
     static Player player;
     static char key;
-    static boolean adminMode;
+    static boolean adminMode, enableMenu;
     function void main() {
         var Status status;
         var int seed;
@@ -11,7 +11,7 @@ class Main {
         do Output.moveCursor(0,0);
         do Output.printString("Press any Key to start");
         let adminMode = false;
-        
+        let enableMenu = true;
         // wait for user Input and set seed
         let key = Keyboard.keyPressed();
         let seed = 42;
@@ -28,9 +28,6 @@ class Main {
             do Sys.wait(10);
         }
         do Screen.clearScreen();
-        // init MazeMenu
-        let menu = MazeMenu.new();
-        do menu.setAdminMode(adminMode);
         
         // init random maze
         let maze = Maze.new(32,32);
@@ -40,17 +37,24 @@ class Main {
         do maze.update();
         let player = maze.getPlayer();
         
-        // refresh menu after maze generation
-        let status = maze.exportStatus();     
-        do menu.setStatus(status);
-        do menu.update();
+        // init MazeMenu
+        if(enableMenu) {
+            let menu = MazeMenu.new();
+            do menu.setAdminMode(adminMode);
+            let status = maze.exportStatus();     
+            do menu.setStatus(status);
+            do menu.update();
+        }
         
         // gameplay Loop
         while(true) {
             let key = Keyboard.keyPressed();
             
             // after any key has been pressed update the menu
-            if(~(key = 0)) {
+            if(~(key = 0) & enableMenu) {
+                let status = maze.exportStatus();     
+                do menu.setStatus(status);
+                do menu.update();
             }
             
             // a to turn to west and move 1 step 
