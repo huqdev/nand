@@ -41,6 +41,11 @@ class MazeMenu {
         }
         do Output.moveCursor(2,0);
         do Output.printString(felder);
+        do Output.moveCursor(3,0);
+        do Output.printInt(status.getFreeTiles());
+        // 47 = '/'
+        do Output.printChar(47);
+        do Output.printInt(status.getTotalTiles());
         do statusS.dispose();
         do admin.dispose();
         do enabled.dispose();
