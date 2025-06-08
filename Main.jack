@@ -50,12 +50,6 @@ class Main {
         while(true) {
             let key = Keyboard.keyPressed();
             
-            // after any key has been pressed update the menu
-            if(~(key = 0) & enableMenu) {
-                let status = maze.exportStatus();     
-                do menu.setStatus(status);
-                do menu.update();
-            }
             
             // a to turn to west and move 1 step 
             if((key = 65) | (key = 97)) {
@@ -113,6 +107,13 @@ class Main {
             if(adminMode & (~(key = 0))) {
                 do maze.loadConfig(key - 48);
                 do maze.update();
+            }
+            
+            // after any key has been pressed update the menu
+            if(~(key = 0) & enableMenu) {
+                let status = maze.exportStatus();     
+                do menu.setStatus(status);
+                do menu.update();
             }
             
             while(~(key = 0)) {
