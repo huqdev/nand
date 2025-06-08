@@ -1,5 +1,6 @@
 class MazeMenu {
     static String statusS, admin, enabled, disabled, felder, confirm;
+    static String controlHeader, cESC, cW, cA, cS, cD, cF, cQ, cE;
     field boolean adminMode;
     field Status status;
     constructor MazeMenu new() {
@@ -27,13 +28,13 @@ class MazeMenu {
         do Screen.drawRectangle(0,0,127,255);
 
         // Überschrift des Menu
-        let statusS = "Status";
+        let statusS = "Status:";
         do Output.moveCursor(0,0);
         do Output.printString(statusS);
         do statusS.dispose();
         
         // Admin Modus
-        let admin = "Admin:";
+        let admin = "Admin: ";
         do Output.moveCursor(1,0);
         do Output.printString(admin);
         do admin.dispose();
@@ -51,7 +52,7 @@ class MazeMenu {
         
         // felder bzw. Tiles stats
         do Output.moveCursor(2,0);
-        let felder = "entdeckt/gesamt";
+        let felder = "entdeckt/gesamt:";
         do Output.printString(felder);
         do Output.moveCursor(3,0);
         do Output.printInt(status.getFreeTiles());
@@ -60,6 +61,43 @@ class MazeMenu {
         do Output.printInt(status.getTotalTiles());
         do felder.dispose();
         
+        // Controls
+        do Output.moveCursor(5,0);
+        let controlHeader = "Steuerung:";
+        do Output.printString(controlHeader);
+        do controlHeader.dispose();
+        
+        // move with wasd
+        do Output.moveCursor(6,0);
+        let cW = "w/W: move up";
+        do Output.printString(cW);
+        do cW.dispose();
+        do Output.moveCursor(7,0);
+        let cA = "a/A: move left";
+        do Output.printString(cA);
+        do cA.dispose();
+        do Output.moveCursor(8,0);
+        let cS = "s/S: move down";
+        do Output.printString(cS);
+        do cS.dispose();
+        do Output.moveCursor(9,0);
+        let cD = "d/D: move right";
+        do Output.printString(cD);
+        do cD.dispose();
+        
+        // turn and sprint
+        do Output.moveCursor(10,0);
+        let cE = "e/E: turn right";
+        do Output.printString(cE);
+        do cE.dispose();
+        do Output.moveCursor(11,0);
+        let cQ = "q/Q: turn left";
+        do Output.printString(cQ);
+        do Output.moveCursor(12,0);
+        do cQ.dispose();
+        let cF = "f/F: sprint";
+        do Output.printString(cF);
+        do cF.dispose();
         return;
     }
 
