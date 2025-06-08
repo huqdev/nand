@@ -139,26 +139,50 @@ class Maze {
         var int baseY;
         var Tile tile,below,right;
         var boolean belowTileRightOpen, rightTileBottomOpen;
+        var boolean rightTileFree, belowTileFree;
         let baseX = x * tileSize + offsetX;
         let baseY = y * tileSize;
         // does a tile below exist
         // default is true, since no Tile means no closedDoor
         let belowTileRightOpen = true;
+        // check if tile below is free.
+        // intend is to show an open door, when the tile it leads to 
+        // has been discovered.
+        let belowTileFree = false;
         if (y < lengthY - 2) {
             let tile = maze[getIndex(x,y + 1)];
+            let belowTileFree = (tile.getState() = 0);
             let belowTileRightOpen = tile.isOpenRight();
         }
         // same for right Tile
         let rightTileBottomOpen = true;
+        let rightTileFree = false;
         if (x < lengthX - 2) {
             let tile = maze[getIndex(x + 1,y)];
+            let rightTileFree = (tile.getState() = 0);
             let rightTileBottomOpen = tile.isOpenBottom();
         }
         let tile = maze[getIndex(x,y)];
-        do Screen.setColor((tile.getState() = 1) | ~tile.isOpenBottom());
+        // bottom door 
+        // default draw closed door
+        do Screen.setColor(true);
+        // current tile or below tile is free
+        // draw door as it is
+        if((tile.getState() = 0) | (belowTileFree)) {
+            do Screen.setColor(~(tile.isOpenBottom()));
+        }
         do Screen.drawLine(baseX, baseY + tileSize - 1, baseX + tileSize - 2, baseY + tileSize - 1);
-        do Screen.setColor((tile.getState() = 1) | ~tile.isOpenRight());
+        
+        // right door
+        // same for right door
+        do Screen.setColor(true);
+        if((tile.getState() = 0) | (rightTileFree)) {
+            do Screen.setColor(~(tile.isOpenRight()));
+        }
         do Screen.drawLine(baseX + tileSize - 1, baseY, baseX + tileSize - 1, baseY + tileSize - 2);
+
+        
+        // corner pixel. is to be drawn, when no adjecent door is closed;
         do Screen.setColor((tile.getState() = 1) | ~tile.isOpenRight() | ~tile.isOpenBottom() | ~belowTileRightOpen | ~rightTileBottomOpen);
         do Screen.drawPixel(baseX + tileSize - 1, baseY + tileSize - 1);
         return;
