@@ -1,6 +1,6 @@
 class MazeMenu {
     static String statusS, admin, enabled, disabled, felder, confirm;
-    static String controlHeader, cESC, cW, cA, cS, cD, cF, cQ, cE;
+    static String controlHeader, cESC, cW, cA, cS, cD, cF, cQ, cE, cC, c0;
     field boolean adminMode;
     field Status status;
     constructor MazeMenu new() {
@@ -86,18 +86,37 @@ class MazeMenu {
         do cD.dispose();
         
         // turn and sprint
-        do Output.moveCursor(10,0);
+        do Output.moveCursor(11,0);
         let cE = "e/E: turn right";
         do Output.printString(cE);
         do cE.dispose();
-        do Output.moveCursor(11,0);
+        do Output.moveCursor(12,0);
         let cQ = "q/Q: turn left";
         do Output.printString(cQ);
-        do Output.moveCursor(12,0);
+        do cQ.dispose();
+        do Output.moveCursor(13,0);
         do cQ.dispose();
         let cF = "f/F: sprint";
         do Output.printString(cF);
         do cF.dispose();
+
+        // adminMode
+        do Output.moveCursor(15,0);
+        let cESC = "ESC: Admin";
+        do Output.printString(cESC);
+        do cESC.dispose();
+
+        // admin Only controls
+        if(adminMode) {
+            do Output.moveCursor(16,0);
+            let cC = "c/C: clear";
+            do Output.printString(cC);
+            do cC.dispose();
+            do Output.moveCursor(17,0);
+            let c0 = "0-9: load";
+            do Output.printString(c0);
+            do c0.dispose();
+        }
         return;
     }
 
