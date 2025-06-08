@@ -1,10 +1,12 @@
 class Player {
     field int x,y;
     field int direction;
-    constructor Player new(int px, int py) {
+    field Maze maze;
+    constructor Player new(int px, int py, Maze pmaze) {
         let x = px;
         let y = py;
         let direction = 1;
+        let maze = pmaze;
         return this;
     }
     method int getDirection() {
@@ -21,6 +23,7 @@ class Player {
 
     method void turnTo(int pdirection) {
         let direction = pdirection;
+        do look();
         return;
     }
 
@@ -35,6 +38,7 @@ class Player {
         } else {
             let direction = direction + 1;
         }
+        do look();
         return;
     }
     
@@ -44,69 +48,128 @@ class Player {
         } else {
             let direction = direction - 1;
         }
+        do look();
         return;
     }
 
-    method void move(Maze maze) {
+    method void move() {
         if(~maze.canMove()) {
             return;
         }
         if(direction = 0) {
-            do moveNorth(maze);
+            do moveNorth();
         }
         if(direction = 1) {
-            do moveEast(maze);
+            do moveEast();
         }
         if(direction = 2) {
-            do moveSouth(maze);
+            do moveSouth();
         }
         if(direction = 3) {
-            do moveWest(maze);
+            do moveWest();
         }
         return;
     }
     
-    method void moveNorth(Maze maze) {
+    method void moveNorth() {
         var int newY;
         let newY = y - 1;
         if(maze.isFree(x, newY)) {
             let y = newY;
             do maze.setTile(x, newY, 0);
-            do maze.update();
         }
         return;
     }
     
-    method void moveSouth(Maze maze) {
+    method void moveSouth() {
         var int newY;
         let newY = y + 1;
         if(maze.isFree(x, newY)) {
             let y = newY;
             do maze.setTile(x, newY, 0);
-            do maze.update();
         }
         return;
     }
     
-    method void moveWest(Maze maze) {
+    method void moveWest() {
         var int newX;
         let newX = x - 1;
         if(maze.isFree(newX, y)) {
             let x = newX;
             do maze.setTile(newX, y, 0);
-            do maze.update();
         }
         return;
     }
     
-    method void moveEast(Maze maze) {
+    method void moveEast() {
         var int newX;
         let newX = x + 1;
         if(maze.isFree(newX, y)) {
             let x = newX;
             do maze.setTile(newX, y, 0);
-            do maze.update();
         }
+        return;
+    }
+
+    // looks into current direction until it sees
+    // a wall and discovers all tiles between.
+    method void look() {
+        if(direction = 0) {
+            do lookNorth();
+        }    
+        if(direction = 1) {
+            do lookEast();
+        }
+        if(direction = 2) {
+            do lookSouth();
+        }
+        if(direction = 3) {
+            do lookWest();
+        }
+        return;
+    }
+
+    method void lookNorth() {
+        var int oldY;
+        let oldY = y;
+        while(maze.canMove()) {
+            do moveNorth();
+        }
+        let y = oldY;
+        do maze.update();
+        return;
+    }
+    
+    method void lookEast() {
+        var int oldX;
+        let oldX = x;
+        while(maze.canMove()) {
+            do moveEast();
+        }
+        let x = oldX;
+        do maze.update();
+        return;
+    }
+    
+    method void lookSouth() {
+        var int oldY;
+        let oldY = y;
+        while(maze.canMove()) {
+            do moveSouth();
+        }
+        let y = oldY;
+        do maze.update();
+        return;
+    }
+    
+    method void lookWest() {
+        var int oldX;
+        let oldX = x;
+        while(maze.canMove()) {
+            do moveWest();
+        }
+        let x = oldX;
+        do maze.update();
         return;
     }
 }

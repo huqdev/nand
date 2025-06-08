@@ -31,7 +31,7 @@ class Maze {
         }
         let tile = maze[getIndex(1,1)];
         do tile.setState(0);
-        let player = Player.new(1,1);
+        let player = Player.new(1,1, this);
         return this;
     }
 

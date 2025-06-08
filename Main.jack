@@ -54,13 +54,13 @@ class Main {
             // a to turn to west and move 1 step 
             if((key = 65) | (key = 97)) {
                 do player.turnTo(3);
-                do player.move(maze);
+                do player.move();
                 do maze.update();
             }
             // d to turn east and move 1 step 
             if((key = 68) | (key = 100)) {
                 do player.turnTo(1);
-                do player.move(maze);
+                do player.move();
                 do maze.update();
             }
             // e to turn the player Clockwise
@@ -77,13 +77,13 @@ class Main {
             // s to turn south and move 1 step
             if((key = 83) | (key = 115)) {
                 do player.turnTo(2);
-                do player.move(maze);
+                do player.move();
                 do maze.update();
             }
             // w to turn north and move 1 step 
             if((key = 87) | (key = 119)) {
                 do player.turnTo(0);
-                do player.move(maze);
+                do player.move();
                 do maze.update();
             }
 
@@ -121,7 +121,7 @@ class Main {
                 
                 // f to go fast
                 if((key = 70) | (key = 102)){
-                    do player.move(maze);
+                    do player.move();
                     do maze.update();
                 }
                 do Sys.wait(100);
